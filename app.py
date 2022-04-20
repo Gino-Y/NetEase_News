@@ -37,6 +37,7 @@ class News(db.Model):
 
 '''
 同步模型到数据库
+Console执行
 from app import db
 db.create_all()
 '''
@@ -73,7 +74,12 @@ def detail(pk):
 @app.route('/admin/<int:page>/')
 def admin(page=1):
     """ 后台管理-新闻首页 """
-    return render_template('admin/index.html')
+    page_size = 3
+    # offset = (page - 1) * page_size
+    # page_data = News.query.limit(page_size).offset(offset)
+    page_data = News.query.paginate(page=page, per_page=page_size)
+    return render_template('admin/index.html',
+                           page_data=page_data)
 
 
 

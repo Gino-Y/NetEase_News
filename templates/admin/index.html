@@ -82,52 +82,39 @@
             </tr>
           </thead>
           <tbody>
+          {% for item in page_data.items %}
             <tr>
-              <td>1</td>
-              <td>朝鲜特种部队视频公布 展示士兵身体素质与意志</td>
-              <td>本地</td>
-              <td>2021-06-13 20:56:24</td>
+              <td>{{ item.id }}</td>
+              <td>{{ item.title }}</td>
+              <td>{{ item.news_type }}</td>
+              <td>{{ item.created_at }}</td>
               <td><a class="btn btn-info" href="/admin/update.html">修改</a>
                 <a class="btn btn-danger" href="javscript:;">删除</a>
               </td>
             </tr>
-            <tr>
-              <td>2</td>
-              <td>男子长得像&#34;祁同伟&#34;挨打 打人者:为何加害检察官</td>
-              <td>百家</td>
-              <td>2021-06-13 20:56:24</td>
-              <td><a class="btn btn-info" href="/admin/update.html">修改</a>
-                <a class="btn btn-danger" href="javscript:;">删除</a>
-              </td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>朝鲜特种部队视频公布 展示士兵身体素质与意志</td>
-              <td>本地</td>
-              <td>2021-06-13 20:56:24</td>
-              <td><a class="btn btn-info" href="/admin/update.html">修改</a>
-                <a class="btn btn-danger" href="javscript:;">删除</a>
-              </td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>男子长得像&#34;祁同伟&#34;挨打 打人者:为何加害检察官</td>
-              <td>百家</td>
-              <td>2021-06-13 20:56:24</td>
-              <td><a class="btn btn-info" href="/admin/update.html">修改</a>
-                <a class="btn btn-danger" href="javscript:;">删除</a>
-              </td>
-            </tr>
+          {% endfor %}
           </tbody>
         </table>
         <nav>
+          <span>总共{{ page_data.pages }}页，总共{{ page_data.total }}条记录</span>
           <ul class="pagination">
-            <li class="disabled"><a href="javscript:;">&raquo;</a></li>
-            <li class="active"><a href="javscript:;">1</a></li>
-            <li><a href="/admin/index.html">2</a></li>
-            <li><a href="/admin/index.html">3</a></li>
-            <li><a href="/admin/index.html">4</a></li>
-            <li><a href="/admin/index.html">&raquo;</a></li>
+              {% if page_data.has_prev %}
+                  <li><a href="/admin/{{ page_data.prev_num }}/">&raquo;</a></li>
+              {% else %}
+                  <li class="disabled"><a href="javscript:;">&raquo;</a></li>
+              {% endif %}
+              {% for page in page_data.iter_pages() %}
+                  {% if page ==page_data.page %}
+                      <li class="active"><a href="javscript:;">{{ page }}</a></li>
+                  {% else %}
+                      <li><a href="/admin/{{ page }}/">{{ page }}</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if page_data.has_next %}
+                  <li><a href="/admin/{{ page_data.next_num }}/">&raquo;</a></li>
+              {% else %}
+                  <li class="disabled"><a href="javscript:;">&raquo;</a></li>
+              {% endif %}
           </ul>
         </nav>
       </div>
