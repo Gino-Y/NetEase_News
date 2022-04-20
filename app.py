@@ -68,5 +68,6 @@ def detail(pk):
     return render_template('detail.html',
                            new_obj=new_obj)
 
+
 if __name__ == '__main__':
     app.run()
