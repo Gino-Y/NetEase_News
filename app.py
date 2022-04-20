@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Flask
+from flask import Flask, render_template, abort
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -34,15 +34,39 @@ class News(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.now(), comment='最后修改时间')
     news_type = db.Column(db.Enum('本地', '百家', '娱乐', '军事'), comment='新闻类别')
 
-# 同步模型到数据库
-# from app import db
-# db.create_all()
+
+'''
+同步模型到数据库
+from app import db
+db.create_all()
+'''
 
 
 @app.route('/')
-def hello_world():  # put application's code here
-    return 'Hello World!'
+def index():
+    """ 首页 """
+    news_list = News.query.filter(News.is_valid == True, News.is_top == True).all()
+    return render_template('index.html',
+                           news_list=news_list)
 
+
+@app.route('/cat/<news_type>/')
+def cat(news_type):
+    """ 新闻分类页 """
+    news_list = News.query.filter(News.news_type == news_type, News.is_valid == True).all()
+    return render_template('cat.html',
+                           news_list=news_list)
+
+
+@app.route('/detail/<int:pk>/')
+def detail(pk):
+    """ 新闻详情页 """
+    new_obj = News.query.get(pk)
+    # 新闻是否已经被删除
+    if not new_obj.is_valid:
+        abort(404)
+    return render_template('detail.html',
+                           new_obj=new_obj)
 
 if __name__ == '__main__':
     app.run()

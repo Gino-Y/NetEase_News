@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link rel="stylesheet" href="/static/css/index.css">
+    <title>首页</title>
+</head>
+
+<body>
+    <!-- 页面头部 -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">首页</a></li>
+                <li><a href="/cat/本地/">本地</a></li>
+                <li><a href="/cat/百家/">百家</a></li>
+                <li><a href="/cat/娱乐/">娱乐</a></li>
+                <li><a href="/cat/军事/">军事</a></li>
+            </ul>
+        </nav>
+    </header>
+    <!-- /页面头部 -->
+    <!-- 新闻内容部分 -->
+    <article>
+      {% for item in news_list %}
+        <div class="list-news">
+            <div class="img-content">
+                <img src="{{ item.img_url }}" alt="图片">
+            </div>
+            <div class="right-content">
+                <p><a href="/detail/{{ item.id }}/">{{ item.title }}</a></p>
+                <small>{{ item.created_at }}</small>
+            </div>
+        </div>
+      {% endfor %}
+    </article>
+    <!-- /新闻内容部分 -->
+</body>
+
+</html>

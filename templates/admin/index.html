@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+  <title>新闻管理-首页</title>
+</head>
+
+<body>
+  <div class="container">
+    <!-- flash消息 -->
+    <div class="alert alert-success">
+      <button type="button" class="close" data-dismiss="alert">×</button>
+      欢迎回来
+    </div>
+    <!-- //flash消息 -->
+    <nav class="navbar navbar-default" role="navigation">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+            data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/admin/index.html">新闻后台管理</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/admin/add.html">
+                <i class="glyphicon glyphicon-plus"></i> 新闻
+              </a>
+            </li>
+          </ul>
+          <form class="navbar-form navbar-left" role="search" action="/admin/index.html">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="输入关键词搜索" name="title" value="">
+            </div>
+            <button type="submit" class="btn btn-default">开始搜索</button>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">关于我们</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">个人中心 <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#">个人信息</a></li>
+                <li><a href="#">修改密码</a></li>
+                <li class="divider"></li>
+                <li><a href="#">退出登录</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="list-group">
+          <a href="/" class="list-group-item active">
+            首页
+          </a>
+          <a href="/admin/index.html" class="list-group-item">管理新闻</a>
+          <a href="/admin/add.html" class="list-group-item">新增新闻</a>
+          <a href="/admin/comments.html" class="list-group-item">管理评论</a>
+        </div>
+      </div>
+      <div class="col-md-9">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>编号</th>
+              <th>新闻标题</th>
+              <th>类别</th>
+              <th>添加时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>朝鲜特种部队视频公布 展示士兵身体素质与意志</td>
+              <td>本地</td>
+              <td>2021-06-13 20:56:24</td>
+              <td><a class="btn btn-info" href="/admin/update.html">修改</a>
+                <a class="btn btn-danger" href="javscript:;">删除</a>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>男子长得像&#34;祁同伟&#34;挨打 打人者:为何加害检察官</td>
+              <td>百家</td>
+              <td>2021-06-13 20:56:24</td>
+              <td><a class="btn btn-info" href="/admin/update.html">修改</a>
+                <a class="btn btn-danger" href="javscript:;">删除</a>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>朝鲜特种部队视频公布 展示士兵身体素质与意志</td>
+              <td>本地</td>
+              <td>2021-06-13 20:56:24</td>
+              <td><a class="btn btn-info" href="/admin/update.html">修改</a>
+                <a class="btn btn-danger" href="javscript:;">删除</a>
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>男子长得像&#34;祁同伟&#34;挨打 打人者:为何加害检察官</td>
+              <td>百家</td>
+              <td>2021-06-13 20:56:24</td>
+              <td><a class="btn btn-info" href="/admin/update.html">修改</a>
+                <a class="btn btn-danger" href="javscript:;">删除</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <nav>
+          <ul class="pagination">
+            <li class="disabled"><a href="javscript:;">&raquo;</a></li>
+            <li class="active"><a href="javscript:;">1</a></li>
+            <li><a href="/admin/index.html">2</a></li>
+            <li><a href="/admin/index.html">3</a></li>
+            <li><a href="/admin/index.html">4</a></li>
+            <li><a href="/admin/index.html">&raquo;</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script src="/static/jquery.1.10.2.min.js"></script>
+  <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+
+  <script>
+    $(function () {
+      $('.btn-danger').on('click', function () {
+        var btn = $(this);
+
+        if (confirm('确定删除该记录吗？')) {
+          $.post(btn.attr('data-url'), function (data) {
+            if (data === 'yes') {
+              btn.parents('tr').hide();
+            } else {
+              alert('删除失败');
+            }
+          })
+        }
+      })
+    })
+  </script>
+</body>
+
+</html>
