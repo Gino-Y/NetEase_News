@@ -69,5 +69,13 @@ def detail(pk):
                            new_obj=new_obj)
 
 
+@app.route('/admin/')
+@app.route('/admin/<int:page>/')
+def admin(page=1):
+    """ 后台管理-新闻首页 """
+    return render_template('admin/index.html')
+
+
+
 if __name__ == '__main__':
     app.run()
