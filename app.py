@@ -3,6 +3,8 @@ from datetime import datetime
 from flask import Flask, render_template, abort
 from flask_sqlalchemy import SQLAlchemy
 
+from forms import NewsForm
+
 app = Flask(__name__)
 
 # 数据库连接的配置
@@ -17,6 +19,7 @@ DB_URI = "mysql+pymysql://{username}:{password}@{host}:{port}/{db}?charset=utf8"
                                                                                         port=PORT,
                                                                                         db=DATABASE)
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
+app.config['SECRET_KEY'] = '123123'
 
 db = SQLAlchemy(app)
 
@@ -80,6 +83,14 @@ def admin(page=1):
     page_data = News.query.paginate(page=page, per_page=page_size)
     return render_template('admin/index.html',
                            page_data=page_data)
+
+
+@app.route('/admin/news/add/')
+def news_add():
+    """新增新闻"""
+    form = NewsForm()
+    return render_template('admin/add.html',
+                           form=form)
 
 
 # 6-12
