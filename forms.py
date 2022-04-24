@@ -5,22 +5,41 @@ from wtforms import (StringField,
                      SelectField,
                      DateField,
                      BooleanField)
-from wtforms.validators import DataRequired
+from wtforms.validators import (DataRequired,
+                                Length,
+                                ValidationError)
 
 NEWS_TYPE_CHOICES = (
-        ('本地', '本地'),
-        ('百家', '百家'),
-        ('军事', '军事'),
-        ('娱乐', '娱乐'),
-    )
+    ('本地', '本地'),
+    ('百家', '百家'),
+    ('军事', '军事'),
+    ('娱乐', '娱乐'),
+)
+
+
+def validate_content(form, field):
+    """
+    验证共用方法：可供多个表单类使用
+    :param form: form表单对象
+    :param field: 需要验证的某一列
+    :return:
+    """
+    value = field.data
+    if len(value) <= 50:
+        raise ValidationError('新闻内容的长度不能少于50个字符')
+    return field
 
 
 class NewsForm(FlaskForm):
     """ 新闻表单 """
-    title = StringField(label='新闻标题', validators=[DataRequired("请输入标题")],
+    title = StringField(label='新闻标题',
+                        validators=[DataRequired("请输入标题"),
+                                    Length(min=5, max=20, message='新闻标题的长度在5-20之间')],
                         description="请输入标题",
                         render_kw={"class": "form-control"})
-    content = TextAreaField(label='新闻内容', validators=[DataRequired("请输入内容")],
+    content = TextAreaField(label='新闻内容',
+                            validators=[DataRequired("请输入内容"),
+                                        validate_content],
                             description="请输入内容",
                             render_kw={"class": "form-control", "rows": 5})
     news_type = SelectField('新闻类型',
@@ -33,3 +52,9 @@ class NewsForm(FlaskForm):
     is_top = BooleanField(label='是否置顶')
     submit = SubmitField(label='提交',
                          render_kw={'class': 'btn btn-info'})
+
+    # def validate_content(self, field):
+    #     value = field.data
+    #     if len(value) <= 50:
+    #         raise ValidationError('新闻内容的长度不能少于50个字符')
+    #     return field
