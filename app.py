@@ -1,6 +1,9 @@
 from datetime import datetime
 
-from flask import Flask, render_template, abort
+from flask import (Flask,
+                   render_template,
+                   abort,
+                   redirect)
 from flask_sqlalchemy import SQLAlchemy
 
 from forms import NewsForm
@@ -85,13 +88,27 @@ def admin(page=1):
                            page_data=page_data)
 
 
-@app.route('/admin/news/add/')
+@app.route('/admin/news/add/', methods=['GET', 'POST'])
 def news_add():
-    """新增新闻"""
+    """ 新增新闻 """
+    # 手动关闭CSRF保护
+    # form = NewsForm(csrf_enabled=False)
     form = NewsForm()
+    if form.validate_on_submit():
+        news_obj = News(
+            title=form.title.data,
+            content=form.content.data,
+            img_url=form.img_url.data,
+            news_type=form.news_type.data
+        )
+        db.session.add(news_obj)
+        db.session.commit()
+        print('新增成功')
+        return redirect('/admin/')
+    else:
+        print('表单没有通过验证', form.errors)
     return render_template('admin/add.html',
                            form=form)
-
 
 # 6-12
 if __name__ == '__main__':
