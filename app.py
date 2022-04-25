@@ -138,5 +138,6 @@ def news_update(pk):
             flash('您的表单中还有错误，请修改', 'danger')
     return render_template('admin/update.html', form=form)
 
+
 if __name__ == '__main__':
     app.run()
