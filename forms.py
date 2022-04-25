@@ -34,7 +34,7 @@ class NewsForm(FlaskForm):
     """ 新闻表单 """
     title = StringField(label='新闻标题',
                         validators=[DataRequired("请输入标题"),
-                                    Length(min=5, max=20, message='新闻标题的长度在5-20之间')],
+                                    Length(min=5, max=50, message='新闻标题的长度在5-50之间')],
                         description="请输入标题",
                         render_kw={"class": "form-control"})
     content = TextAreaField(label='新闻内容',

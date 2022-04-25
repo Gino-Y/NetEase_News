@@ -3,7 +3,9 @@ from datetime import datetime
 from flask import (Flask,
                    render_template,
                    abort,
-                   redirect)
+                   redirect,
+                   flash,
+                   request)
 from flask_sqlalchemy import SQLAlchemy
 
 from forms import NewsForm
@@ -104,12 +106,37 @@ def news_add():
         db.session.add(news_obj)
         db.session.commit()
         print('新增成功')
+        flash('新增新闻成功', 'success')
         return redirect('/admin/')
     else:
         print('表单没有通过验证', form.errors)
+        flash('您的表单中还有错误，请修改', 'danger')
     return render_template('admin/add.html',
                            form=form)
 
-# 6-12
+
+@app.route('/admin/news/update/<int:pk>/', methods=['GET', 'POST'])
+def news_update(pk):
+    """ 修改新闻 """
+    news_obj = News.query.get(pk)
+    if not news_obj.is_valid:
+        abort(404)
+    form = NewsForm(obj=news_obj)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            news_obj.title = form.title.data
+            news_obj.content = form.content.data
+            news_obj.img_url = form.img_url.data
+            news_obj.news_type = form.news_type.data
+            news_obj.is_top = form.is_top.data
+            news_obj.updated_at = datetime.now()
+            db.session.add(news_obj)
+            db.session.commit()
+            flash('新闻修改成功', 'success')
+            return redirect('/admin/')
+        else:
+            flash('您的表单中还有错误，请修改', 'danger')
+    return render_template('admin/update.html', form=form)
+
 if __name__ == '__main__':
     app.run()
