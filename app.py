@@ -85,7 +85,7 @@ def admin(page=1):
     page_size = 3
     # offset = (page - 1) * page_size
     # page_data = News.query.limit(page_size).offset(offset)
-    page_data = News.query.paginate(page=page, per_page=page_size)
+    page_data = News.query.filter_by(is_valid=True).paginate(page=page, per_page=page_size)
     return render_template('admin/index.html',
                            page_data=page_data)
 
@@ -137,6 +137,24 @@ def news_update(pk):
         else:
             flash('您的表单中还有错误，请修改', 'danger')
     return render_template('admin/update.html', form=form)
+
+
+@app.route('/admin/news/delete/<int:pk>/', methods=['POST'])
+def news_delete(pk):
+    """ 逻辑删除新闻 """
+    if request.method == 'POST':
+        news_obj = News.query.get(pk)
+        # 新闻不存在
+        if news_obj is None:
+            return 'no'
+        # 新闻已经被删除掉了
+        if not news_obj.is_valid:
+            return 'no'
+        news_obj.is_valid = False
+        db.session.add(news_obj)
+        db.session.commit()
+        return 'yes'
+    return 'no'
 
 
 if __name__ == '__main__':

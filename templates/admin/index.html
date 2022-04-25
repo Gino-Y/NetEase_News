@@ -92,7 +92,7 @@
               <td>{{ item.news_type }}</td>
               <td>{{ item.created_at }}</td>
               <td><a class="btn btn-info" href="/admin/news/update/{{ item.id }}/">修改</a>
-                <a class="btn btn-danger" href="javscript:;">删除</a>
+                <a class="btn btn-danger" data-url="/admin/news/delete/{{ item.id }}/" href="javscript:;">删除</a>
               </td>
             </tr>
           {% endfor %}
