@@ -9,7 +9,11 @@ from flask import (Flask,
                    url_for)
 from flask_sqlalchemy import SQLAlchemy
 from flask_mongoengine import MongoEngine
-from mongoengine.fields import IntField, StringField, BooleanField, ObjectIdField, DateTimeField
+from mongoengine.fields import (IntField,
+                                StringField,
+                                BooleanField,
+                                ObjectIdField,
+                                DateTimeField)
 
 
 from forms import NewsForm
@@ -139,8 +143,8 @@ def news_add():
                 img_url=form.img_url.data,
                 news_type=form.news_type.data
             )
-            db.session.add(news_obj)
-            db.session.commit()
+            mysqldb.session.add(news_obj)
+            mysqldb.session.commit()
             print('新增成功')
             flash('新增成功', 'success')
             return redirect(url_for('admin'))
@@ -166,8 +170,8 @@ def news_update(pk):
             news_obj.news_type = form.news_type.data
             news_obj.is_top = form.is_top.data
             news_obj.updated_at = datetime.now()
-            db.session.add(news_obj)
-            db.session.commit()
+            mysqldb.session.add(news_obj)
+            mysqldb.session.commit()
             flash('新闻修改成功', 'success')
             return redirect(url_for('admin'))
         else:
@@ -187,7 +191,7 @@ def news_delete(pk):
         if not news_obj.is_valid:
             return 'no'
         news_obj.is_valid = False
-        db.session.add(news_obj)
-        db.session.commit()
+        mysqldb.session.add(news_obj)
+        mysqldb.session.commit()
         return 'yes'
     return 'no'
