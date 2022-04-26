@@ -8,6 +8,9 @@ from flask import (Flask,
                    request,
                    url_for)
 from flask_sqlalchemy import SQLAlchemy
+from flask_mongoengine import MongoEngine
+from mongoengine.fields import IntField, StringField, BooleanField, ObjectIdField, DateTimeField
+
 
 from forms import NewsForm
 
@@ -26,21 +29,52 @@ DB_URI = "mysql+pymysql://{username}:{password}@{host}:{port}/{db}?charset=utf8"
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = '123123'
 
-db = SQLAlchemy(app)
+app.config['MONGODB_SETTINGS'] = {
+    'db': 'flask_news',
+    # 'username':'webapp',
+    # 'password':'pwd123'
+}
+
+# db = SQLAlchemy(app)
+mysqldb = SQLAlchemy()
+mysqldb.init_app(app=app)
+mongodb = MongoEngine()
+mongodb.init_app(app=app)
 
 
-class News(db.Model):
+class News(mysqldb.Model):
     """ 新闻模型 """
     __tablename__ = 'news'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False, comment='标题')
-    img_url = db.Column(db.String(200), nullable=False, comment='主图地址')
-    content = db.Column(db.String(2000), nullable=False, comment='新闻内容')
-    is_valid = db.Column(db.Boolean, default=True, comment='逻辑删除')
-    is_top = db.Column(db.Boolean, default=False, comment='是否置顶')
-    created_at = db.Column(db.DateTime, default=datetime.now(), comment='创建时间')
-    updated_at = db.Column(db.DateTime, default=datetime.now(), comment='最后修改时间')
-    news_type = db.Column(db.Enum('本地', '百家', '娱乐', '军事'), comment='新闻类别')
+    id = mysqldb.Column(mysqldb.Integer, primary_key=True)
+    title = mysqldb.Column(mysqldb.String(200), nullable=False, comment='标题')
+    img_url = mysqldb.Column(mysqldb.String(200), nullable=False, comment='主图地址')
+    content = mysqldb.Column(mysqldb.String(2000), nullable=False, comment='新闻内容')
+    is_valid = mysqldb.Column(mysqldb.Boolean, default=True, comment='逻辑删除')
+    is_top = mysqldb.Column(mysqldb.Boolean, default=False, comment='是否置顶')
+    created_at = mysqldb.Column(mysqldb.DateTime, default=datetime.now(), comment='创建时间')
+    updated_at = mysqldb.Column(mysqldb.DateTime, default=datetime.now(), comment='最后修改时间')
+    news_type = mysqldb.Column(mysqldb.Enum('本地', '百家', '娱乐', '军事'), comment='新闻类别')
+
+
+class Comments(mongodb.Document):
+    """ 评论的ODM模型 """
+    # 新闻（对象）ID，评论内容，逻辑删除、评论回复的ID，评论ID, 新增时间，修改时间
+    object_id = IntField(required=True, verbose_name='关联的对象（新闻的ID）')
+    content = StringField(required=True, max_length=2000, verbose_name='评论的内容')
+    is_valid = BooleanField(default=True, verbose_name='是否有效')
+    reply_id = ObjectIdField(verbose_name='回复评论的ID')
+    created_at = DateTimeField(default=datetime.now(), verbose_name='创建时间')
+    updated_at = DateTimeField(default=datetime.now(), verbose_name='最后修改时间')
+
+    meta = {
+        # 所存放的集合
+        'collection': 'comments',
+        # 排序规则：是否有效（有效的在前）、发布的时间倒序
+        'ordering': ['is_valid', '-created_at']
+    }
+
+    def __str__(self):
+        return f'Comments: {self.content}'
 
 
 @app.route('/')

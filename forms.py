@@ -1,5 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, SelectField, DateField, BooleanField
+from wtforms import (StringField,
+                     SubmitField,
+                     TextAreaField,
+                     SelectField,
+                     DateField,
+                     BooleanField,
+                     HiddenField)
 from wtforms.validators import DataRequired, Length, ValidationError
 
 NEWS_TYPE_CHOICES = (
@@ -53,3 +59,15 @@ class NewsForm(FlaskForm):
     #     if len(value) <= 50:
     #         raise ValidationError("新闻内容长度不能少于50个字符")
     #     return field
+
+
+class CommentForm(FlaskForm):
+    """ 评论表单 """
+    object_id = HiddenField(label='关联的新闻', validators=[DataRequired("新闻ID不能为空")])
+    reply_id = HiddenField(label='关联回复')
+    content = TextAreaField(label='评论内容', validators=[DataRequired("请输入内容"),
+                            Length(min=5, max=200, message='评论内容在5-200之间')],
+                            description="请输入内容",
+                            render_kw={"class": "form-control", "rows": 5})
+    submit = SubmitField(label='提交评论',
+                         render_kw={'class': 'btn btn-info'})
