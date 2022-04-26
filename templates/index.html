@@ -10,7 +10,7 @@
         <img src="{{ item.img_url }}" alt="图片">
       </div>
       <div class="right-content">
-        <p><a href="/detail/{{ item.id }}/">{{ item.title }}</a></p>
+        <p><a href="{{ url_for('detail', pk=item.id) }}">{{ item.title }}</a></p>
         <small>{{ item.created_at }}</small>
       </div>
     </div>

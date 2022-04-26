@@ -3,14 +3,14 @@
 <title>新闻类别页</title>
 {% endblock %}
 {% block content %}
-  <h3>新闻类别>{% block title %}本地2{% endblock %}</h3>
+  <h3>新闻类别>{% block title %}{{ news_type }}{% endblock %}</h3>
   {% for item in news_list %}
     <div class="list-news">
       <div class="img-content">
         <img src="{{ item.img_url }}" alt="图片">
       </div>
       <div class="right-content">
-        <p><a href="/detail/{{ item.id }}/">{{ item.title }}</a></p>
+        <p><a href="{{ url_for('detail', pk=item.id) }}">{{ item.title }}</a></p>
         <small>{{ item.created_at }}</small>
       </div>
     </div>

@@ -1,6 +1,12 @@
 from datetime import datetime
 
-from flask import Flask, render_template, abort, redirect, flash, request
+from flask import (Flask,
+                   render_template,
+                   abort,
+                   redirect,
+                   flash,
+                   request,
+                   url_for)
 from flask_sqlalchemy import SQLAlchemy
 
 from forms import NewsForm
@@ -50,13 +56,16 @@ def cat(news_type):
     """ 新闻分类页 """
     news_list = News.query.filter(News.news_type == news_type, News.is_valid == True).all()
     return render_template('cat.html',
-                           news_list=news_list)
+                           news_list=news_list,
+                           news_type=news_type)
 
 
 @app.route('/detail/<int:pk>/')
 def detail(pk):
     """ 新闻详情页 """
     new_obj = News.query.get(pk)
+    if new_obj is None:
+        abort(404)
     # 新闻是否已经被删除
     if not new_obj.is_valid:
         abort(404)
@@ -71,9 +80,15 @@ def admin(page=1):
     page_size = 3
     # offset = (page - 1) * page_size
     # page_data = News.query.limit(page_size).offset(offset)
-    page_data = News.query.filter_by(is_valid=True).paginate(page=page, per_page=page_size)
+    title = request.args.get('title', '')
+    page_data = News.query.filter_by(is_valid=True)
+    # 根据标题进行模糊搜索
+    if title:
+        page_data = page_data.filter(News.title.contains(title))
+    page_data = page_data.paginate(page=page, per_page=page_size)
     return render_template('admin/index.html',
-                           page_data=page_data)
+                           page_data=page_data,
+                           title=title)
 
 
 @app.route('/admin/news/add/', methods=['GET', 'POST'])
@@ -94,7 +109,7 @@ def news_add():
             db.session.commit()
             print('新增成功')
             flash('新增成功', 'success')
-            return redirect('/admin/')
+            return redirect(url_for('admin'))
         else:
             flash('您的表单中还有错误，请修改', 'danger')
             print('表单没有通过验证', form.errors)
@@ -120,7 +135,7 @@ def news_update(pk):
             db.session.add(news_obj)
             db.session.commit()
             flash('新闻修改成功', 'success')
-            return redirect('/admin/')
+            return redirect(url_for('admin'))
         else:
             flash('您的表单中还有错误，请修改', 'danger')
     return render_template('admin/update.html', form=form)

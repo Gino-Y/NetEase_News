@@ -21,8 +21,8 @@
         <td>{{ item.title }}</td>
         <td>{{ item.news_type }}</td>
         <td>{{ item.created_at }}</td>
-        <td><a class="btn btn-info" href="/admin/news/update/{{ item.id }}/">修改</a>
-          <a class="btn btn-danger" data-url="/admin/news/delete/{{ item.id }}/" href="javscript:;">删除</a>
+        <td><a class="btn btn-info" href="{{ url_for('news_update', pk=item.id) }}">修改</a>
+          <a class="btn btn-danger" data-url="{{ url_for('news_delete', pk=item.id) }}" href="javscript:;">删除</a>
         </td>
       </tr>
     {% endfor %}
@@ -32,7 +32,7 @@
     <span>总共{{ page_data.pages }}页，总共{{ page_data.total }}条记录</span>
     <ul class="pagination">
       {% if page_data.has_prev %}
-        <li><a href="/admin/{{ page_data.prev_num }}/">&raquo;</a></li>
+        <li><a href="{{ url_for('admin', page=page_data.prev_num) }}?title={{ title }}">&raquo;</a></li>
       {% else %}
         <li class="disabled"><a href="javscript:;">&raquo;</a></li>
       {% endif %}
@@ -40,11 +40,11 @@
         {% if page == page_data.page %}
           <li class="active"><a href="javscript:;">{{ page }}</a></li>
         {% else %}
-          <li><a href="/admin/{{ page }}/">{{ page }}</a></li>
+          <li><a href="{{ url_for('admin', page=page) }}?title={{ title }}">{{ page }}</a></li>
         {% endif %}
       {% endfor %}
       {% if page_data.has_next %}
-        <li><a href="/admin/{{ page_data.next_num }}/">&raquo;</a></li>
+        <li><a href="{{ url_for('admin', page=page_data.next_num) }}?title={{ title }}">&raquo;</a></li>
       {% else %}
         <li class="disabled"><a href="javscript:;">&raquo;</a></li>
       {% endif %}
