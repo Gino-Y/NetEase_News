@@ -1,17 +1,11 @@
 from datetime import datetime
 
-from flask import (Flask,
-                   render_template,
-                   abort,
-                   redirect,
-                   flash,
-                   request)
+from flask import Flask, render_template, abort, redirect, flash, request
 from flask_sqlalchemy import SQLAlchemy
 
 from forms import NewsForm
 
 app = Flask(__name__)
-
 # 数据库连接的配置
 HOST = '47.241.35.150'
 PORT = '3306'
@@ -41,14 +35,6 @@ class News(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now(), comment='创建时间')
     updated_at = db.Column(db.DateTime, default=datetime.now(), comment='最后修改时间')
     news_type = db.Column(db.Enum('本地', '百家', '娱乐', '军事'), comment='新闻类别')
-
-
-'''
-同步模型到数据库
-Console执行
-from app import db
-db.create_all()
-'''
 
 
 @app.route('/')
@@ -96,21 +82,22 @@ def news_add():
     # 手动关闭CSRF保护
     # form = NewsForm(csrf_enabled=False)
     form = NewsForm()
-    if form.validate_on_submit():
-        news_obj = News(
-            title=form.title.data,
-            content=form.content.data,
-            img_url=form.img_url.data,
-            news_type=form.news_type.data
-        )
-        db.session.add(news_obj)
-        db.session.commit()
-        print('新增成功')
-        flash('新增新闻成功', 'success')
-        return redirect('/admin/')
-    else:
-        print('表单没有通过验证', form.errors)
-        flash('您的表单中还有错误，请修改', 'danger')
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            news_obj = News(
+                title=form.title.data,
+                content=form.content.data,
+                img_url=form.img_url.data,
+                news_type=form.news_type.data
+            )
+            db.session.add(news_obj)
+            db.session.commit()
+            print('新增成功')
+            flash('新增成功', 'success')
+            return redirect('/admin/')
+        else:
+            flash('您的表单中还有错误，请修改', 'danger')
+            print('表单没有通过验证', form.errors)
     return render_template('admin/add.html',
                            form=form)
 
@@ -155,7 +142,3 @@ def news_delete(pk):
         db.session.commit()
         return 'yes'
     return 'no'
-
-
-if __name__ == '__main__':
-    app.run()
