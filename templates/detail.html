@@ -7,6 +7,7 @@
   <!-- 新闻内容部分 -->
 
   <div class="container">
+  {% include 'flash_massages.html' %}
     <h3>{{ new_obj.title }}</h3>
     <p>所属分类：{{ new_obj.news_type }}
       <small class="pull-right text-muted">发表时间：{{ new_obj.created_at }}</small>
@@ -31,13 +32,20 @@
     </blockquote>
     <hr>
     <h4>发表评论</h4>
-    <form class="comment-form" method='post'>
-      <div class="form-group"><textarea class="form-control" id="content" name="content" required="required">
-</textarea></div>
+    <form class="comment-form" method='post' action="{{ url_for('comment_add', news_id=new_obj.id) }}">
+      <div class="form-group">
+        {{ form.content }}
+        {% if form.content.errors %}
+          <span class="text-danger">
+            {{ form.content.errors[0] }}
+          </span>
+        {% endif %}
+      </div>
       <div class="form-group text-right">
-        <input id="csrf_token" name="csrf_token" type="hidden"
-               value="IjAwMWVjOTI1ODg4YjkwNTY3MzRlODc5YzczMzA5ZDY3MGZmNTdjNjIi.YMYFag.Dh2jTRrggvXOwrVc-n7R70-jY4Q">
-        <input class="btn btn-info" id="submit" name="submit" type="submit" value="提交评论">
+        {{ form.csrf_token }}
+          {{ form.object_id }}
+          {{ form.reply_id }}
+        {{ form.submit }}
       </div>
     </form>
   </div>

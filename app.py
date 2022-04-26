@@ -12,7 +12,7 @@ from flask_mongoengine import MongoEngine
 from mongoengine.fields import IntField, StringField, BooleanField, ObjectIdField, DateTimeField
 
 
-from forms import NewsForm
+from forms import NewsForm, CommentForm
 
 app = Flask(__name__)
 # 数据库连接的配置
@@ -30,7 +30,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = '123123'
 
 app.config['MONGODB_SETTINGS'] = {
-    'db': 'flask_news',
+    'db': 'netease_news',
     # 'username':'webapp',
     # 'password':'pwd123'
 }
@@ -98,13 +98,15 @@ def cat(news_type):
 def detail(pk):
     """ 新闻详情页 """
     new_obj = News.query.get(pk)
+    form = CommentForm(data={'object_id': pk})
     if new_obj is None:
         abort(404)
     # 新闻是否已经被删除
     if not new_obj.is_valid:
         abort(404)
     return render_template('detail.html',
-                           new_obj=new_obj)
+                           new_obj=new_obj,
+                           form=form)
 
 
 @app.route('/admin/')
@@ -139,8 +141,8 @@ def news_add():
                 img_url=form.img_url.data,
                 news_type=form.news_type.data
             )
-            db.session.add(news_obj)
-            db.session.commit()
+            mysqldb.session.add(news_obj)
+            mysqldb.session.commit()
             print('新增成功')
             flash('新增成功', 'success')
             return redirect(url_for('admin'))
@@ -166,8 +168,8 @@ def news_update(pk):
             news_obj.news_type = form.news_type.data
             news_obj.is_top = form.is_top.data
             news_obj.updated_at = datetime.now()
-            db.session.add(news_obj)
-            db.session.commit()
+            mysqldb.session.add(news_obj)
+            mysqldb.session.commit()
             flash('新闻修改成功', 'success')
             return redirect(url_for('admin'))
         else:
@@ -187,7 +189,32 @@ def news_delete(pk):
         if not news_obj.is_valid:
             return 'no'
         news_obj.is_valid = False
-        db.session.add(news_obj)
-        db.session.commit()
+        mysqldb.session.add(news_obj)
+        mysqldb.session.commit()
         return 'yes'
     return 'no'
+
+@app.route('/comment/<int:news_id>/add/', methods=['POST'])
+def comment_add(news_id):
+    """ 新增评论 """
+    new_obj = News.query.get(news_id)
+    form = CommentForm(data={'object_id': news_id})
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            comment_obj = Comments(
+                content=form.content.data,
+                object_id=news_id
+            )
+            reply_id = form.reply_id.data
+            if reply_id:
+                comment_obj.reply_id = reply_id
+            comment_obj.save()
+            print('评论成功')
+            flash('评论成功', 'success')
+            return redirect(url_for('detail', pk=news_id))
+        else:
+            flash('您的表单中还有错误，请修改', 'danger')
+            print('表单没有通过验证', form.errors)
+    return render_template('detail.html',
+                           form=form,
+                           new_obj=new_obj)
