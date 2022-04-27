@@ -9,7 +9,11 @@ from flask import (Flask,
                    url_for)
 from flask_sqlalchemy import SQLAlchemy
 from flask_mongoengine import MongoEngine
-from mongoengine.fields import IntField, StringField, BooleanField, ObjectIdField, DateTimeField
+from mongoengine.fields import (IntField,
+                                StringField,
+                                BooleanField,
+                                ObjectIdField,
+                                DateTimeField)
 
 
 from forms import NewsForm, CommentForm
