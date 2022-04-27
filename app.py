@@ -15,6 +15,7 @@ from mongoengine.fields import IntField, StringField, BooleanField, ObjectIdFiel
 from forms import NewsForm, CommentForm
 
 app = Flask(__name__)
+
 # 数据库连接的配置
 HOST = '47.241.35.150'
 PORT = '3306'
@@ -29,11 +30,31 @@ DB_URI = "mysql+pymysql://{username}:{password}@{host}:{port}/{db}?charset=utf8"
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = '123123'
 
+# # app.config['MONGODB_SETTINGS'] = {
+# #     'db': 'netease_news',
+# #     # 'username':'webapp',
+# #     # 'password':'pwd123'
+# # }
+# app.config['MONGODB_DB'] = 'netease_news'
+# app.config['MONGODB_HOST'] = '47.241.35.15'
+# # app.config['MONGODB_PORT'] = 12345
+# # app.config['MONGODB_USERNAME'] = 'root'
+# # app.config['MONGODB_PASSWORD'] = 'Kadfgo53254G'
+# app.config['MONGODB_SETTINGS'] = {
+#     'db': 'netease_news',
+#     'host': 'mongodb://47.241.35.15/netease_news'
+# }
+# 通过MONGODB_SETTINGS配置MongoEngine
 app.config['MONGODB_SETTINGS'] = {
-    'db': 'netease_news',
-    # 'username':'webapp',
-    # 'password':'pwd123'
-}
+        'db': 'netease_news',
+        'host': '47.241.35.15',
+        'port': 27017,
+        'connect': True,
+        # 'username': 'test',
+        # 'password': '123456',
+        'authentication_source': 'admin'
+    }
+
 
 # db = SQLAlchemy(app)
 mysqldb = SQLAlchemy()
@@ -68,7 +89,7 @@ class Comments(mongodb.Document):
 
     meta = {
         # 所存放的集合
-        'collection': 'comments',
+        'collection': 'netease_news',
         # 排序规则：是否有效（有效的在前）、发布的时间倒序
         'ordering': ['is_valid', '-created_at']
     }
@@ -193,6 +214,7 @@ def news_delete(pk):
         mysqldb.session.commit()
         return 'yes'
     return 'no'
+
 
 @app.route('/comment/<int:news_id>/add/', methods=['POST'])
 def comment_add(news_id):
