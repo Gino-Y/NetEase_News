@@ -35,28 +35,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = '123123'
 
 # mongodb数据库连接的配置
-# # app.config['MONGODB_SETTINGS'] = {
-# #     'db': 'netease_news',
-# #     # 'username':'webapp',
-# #     # 'password':'pwd123'
-# # }
-# app.config['MONGODB_DB'] = 'netease_news'
-# app.config['MONGODB_HOST'] = '47.241.35.15'
-# # app.config['MONGODB_PORT'] = 12345
-# # app.config['MONGODB_USERNAME'] = 'root'
-# # app.config['MONGODB_PASSWORD'] = 'Kadfgo53254G'
-# app.config['MONGODB_SETTINGS'] = {
-#     'db': 'netease_news',
-#     'host': 'mongodb://47.241.35.15/netease_news'
-# }
 # 通过MONGODB_SETTINGS配置MongoEngine
 app.config['MONGODB_SETTINGS'] = {
         'db': 'netease_news',
-        'host': '47.241.35.15',
+        'host': '47.241.35.150',
         'port': 27017,
         'connect': True,
-        # 'username': 'test',
-        # 'password': '123456',
+        'username': 'admin',
+        'password': '123456',
         'authentication_source': 'admin'
     }
 
