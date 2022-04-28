@@ -12,14 +12,7 @@
 
 <body>
   <div class="container">
-    <!-- flash消息 -->
-    {% for category, message in get_flashed_messages(with_categories=True) %}
-    <div class="alert alert-{{ category }}">
-      <button type="button" class="close" data-dismiss="alert">×</button>
-      {{ message }}
-    </div>
-  {% endfor %}
-    <!-- //flash消息 -->
+    {% include 'flash_massages.html' %}
     <nav class="navbar navbar-default" role="navigation">
       <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
