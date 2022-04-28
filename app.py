@@ -34,9 +34,14 @@ DB_URI = "mysql+pymysql://{username}:{password}@{host}:{port}/{db}?charset=utf8"
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = '123123'
 
-# mongodb数据库连接的配置
-# 通过MONGODB_SETTINGS配置MongoEngine
-app.config['MONGODB_SETTINGS'] = {
+# db = SQLAlchemy(app)
+mysqlDB = SQLAlchemy()
+mysqlDB.init_app(app=app)
+
+
+# mongoDB数据库连接的配置
+# 通过mongoDB_SETTINGS配置MongoEngine
+app.config['mongoDB_SETTINGS'] = {
         'db': 'netease_news',
         'host': '47.241.35.150',
         'port': 27017,
@@ -46,29 +51,25 @@ app.config['MONGODB_SETTINGS'] = {
         'authentication_source': 'admin'
     }
 
-
-# db = SQLAlchemy(app)
-mysqldb = SQLAlchemy()
-mysqldb.init_app(app=app)
-mongodb = MongoEngine()
-mongodb.init_app(app=app)
+mongoDB = MongoEngine()
+mongoDB.init_app(app=app)
 
 
-class News(mysqldb.Model):
+class News(mysqlDB.Model):
     """ 新闻模型 """
     __tablename__ = 'news'
-    id = mysqldb.Column(mysqldb.Integer, primary_key=True)
-    title = mysqldb.Column(mysqldb.String(200), nullable=False, comment='标题')
-    img_url = mysqldb.Column(mysqldb.String(200), nullable=False, comment='主图地址')
-    content = mysqldb.Column(mysqldb.String(2000), nullable=False, comment='新闻内容')
-    is_valid = mysqldb.Column(mysqldb.Boolean, default=True, comment='逻辑删除')
-    is_top = mysqldb.Column(mysqldb.Boolean, default=False, comment='是否置顶')
-    created_at = mysqldb.Column(mysqldb.DateTime, default=datetime.now(), comment='创建时间')
-    updated_at = mysqldb.Column(mysqldb.DateTime, default=datetime.now(), comment='最后修改时间')
-    news_type = mysqldb.Column(mysqldb.Enum('本地', '百家', '娱乐', '军事'), comment='新闻类别')
+    id = mysqlDB.Column(mysqlDB.Integer, primary_key=True)
+    title = mysqlDB.Column(mysqlDB.String(200), nullable=False, comment='标题')
+    img_url = mysqlDB.Column(mysqlDB.String(200), nullable=False, comment='主图地址')
+    content = mysqlDB.Column(mysqlDB.String(2000), nullable=False, comment='新闻内容')
+    is_valid = mysqlDB.Column(mysqlDB.Boolean, default=True, comment='逻辑删除')
+    is_top = mysqlDB.Column(mysqlDB.Boolean, default=False, comment='是否置顶')
+    created_at = mysqlDB.Column(mysqlDB.DateTime, default=datetime.now(), comment='创建时间')
+    updated_at = mysqlDB.Column(mysqlDB.DateTime, default=datetime.now(), comment='最后修改时间')
+    news_type = mysqlDB.Column(mysqlDB.Enum('本地', '百家', '娱乐', '军事'), comment='新闻类别')
 
 
-class Comments(mongodb.Document):
+class Comments(mongoDB.Document):
     """ 评论的ODM模型 """
     # 新闻（对象）ID，评论内容，逻辑删除、评论回复的ID，评论ID, 新增时间，修改时间
     object_id = IntField(required=True, verbose_name='关联的对象（新闻的ID）')
@@ -80,7 +81,7 @@ class Comments(mongodb.Document):
 
     meta = {
         # 所存放的集合
-        'collection': 'netease_news',
+        'collection': 'comments',
         # 排序规则：是否有效（有效的在前）、发布的时间倒序
         'ordering': ['is_valid', '-created_at']
     }
@@ -153,8 +154,8 @@ def news_add():
                 img_url=form.img_url.data,
                 news_type=form.news_type.data
             )
-            mysqldb.session.add(news_obj)
-            mysqldb.session.commit()
+            mysqlDB.session.add(news_obj)
+            mysqlDB.session.commit()
             print('新增成功')
             flash('新增成功', 'success')
             return redirect(url_for('admin'))
@@ -180,8 +181,8 @@ def news_update(pk):
             news_obj.news_type = form.news_type.data
             news_obj.is_top = form.is_top.data
             news_obj.updated_at = datetime.now()
-            mysqldb.session.add(news_obj)
-            mysqldb.session.commit()
+            mysqlDB.session.add(news_obj)
+            mysqlDB.session.commit()
             flash('新闻修改成功', 'success')
             return redirect(url_for('admin'))
         else:
@@ -201,8 +202,8 @@ def news_delete(pk):
         if not news_obj.is_valid:
             return 'no'
         news_obj.is_valid = False
-        mysqldb.session.add(news_obj)
-        mysqldb.session.commit()
+        mysqlDB.session.add(news_obj)
+        mysqlDB.session.commit()
         return 'yes'
     return 'no'
 
