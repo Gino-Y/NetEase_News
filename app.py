@@ -20,7 +20,7 @@ from forms import NewsForm, CommentForm
 
 app = Flask(__name__)
 
-# 数据库连接的配置
+# mysql数据库连接的配置
 HOST = '47.241.35.150'
 PORT = '3306'
 DATABASE = 'netease_news'
@@ -34,6 +34,7 @@ DB_URI = "mysql+pymysql://{username}:{password}@{host}:{port}/{db}?charset=utf8"
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = '123123'
 
+# mongodb数据库连接的配置
 # # app.config['MONGODB_SETTINGS'] = {
 # #     'db': 'netease_news',
 # #     # 'username':'webapp',
