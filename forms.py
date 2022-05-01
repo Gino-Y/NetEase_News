@@ -9,11 +9,11 @@ from wtforms import (StringField,
 from wtforms.validators import DataRequired, Length, ValidationError
 
 NEWS_TYPE_CHOICES = (
-        ('本地', '本地'),
-        ('百家', '百家'),
-        ('军事', '军事'),
-        ('娱乐', '娱乐'),
-    )
+    ('本地', '本地'),
+    ('百家', '百家'),
+    ('军事', '军事'),
+    ('娱乐', '娱乐'),
+)
 
 
 def validate_content(form, field):
@@ -31,9 +31,9 @@ def validate_content(form, field):
 class NewsForm(FlaskForm):
     """ 新闻表单 """
     title = StringField(label='新闻标题', validators=[
-                            DataRequired("请输入标题"),
-                            Length(min=20, max=200, message='新闻标题的长度在20-200之间')
-                        ],
+        DataRequired("请输入标题"),
+        Length(min=20, max=200, message='新闻标题的长度在20-200之间')
+    ],
                         description="请输入标题",
                         render_kw={"class": "form-control"})
     content = TextAreaField(label='新闻内容', validators=[DataRequired("请输入内容"), validate_content],
@@ -65,8 +65,9 @@ class CommentForm(FlaskForm):
     """ 评论表单 """
     object_id = HiddenField(label='关联的新闻', validators=[DataRequired("新闻ID不能为空")])
     reply_id = HiddenField(label='关联回复')
-    content = TextAreaField(label='评论内容', validators=[DataRequired("请输入内容"),
-                            Length(min=5, max=200, message='评论内容在5-200之间')],
+    content = TextAreaField(label='评论内容',
+                            validators=[DataRequired("请输入内容"),
+                                        Length(min=5, max=200, message='评论内容在5-200之间')],
                             description="请输入内容",
                             render_kw={"class": "form-control", "rows": 5})
     submit = SubmitField(label='提交评论',

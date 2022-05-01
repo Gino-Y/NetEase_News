@@ -15,7 +15,6 @@ from mongoengine.fields import (IntField,
                                 ObjectIdField,
                                 DateTimeField)
 
-
 from forms import NewsForm, CommentForm
 
 app = Flask(__name__)
@@ -32,24 +31,24 @@ DB_URI = "mysql+pymysql://{username}:{password}@{host}:{port}/{db}?charset=utf8"
                                                                                         port=PORT,
                                                                                         db=DATABASE)
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SECRET_KEY'] = '123123'
 
 # db = SQLAlchemy(app)
 mysqlDB = SQLAlchemy()
 mysqlDB.init_app(app=app)
 
-
 # mongoDB数据库连接的配置
 # 通过mongoDB_SETTINGS配置MongoEngine
-app.config['mongoDB_SETTINGS'] = {
-        'db': 'netease_news',
-        'host': '47.241.35.150',
-        'port': 27017,
-        'connect': True,
-        'username': 'admin',
-        'password': '123456',
-        'authentication_source': 'admin'
-    }
+app.config['MONGODB_SETTINGS'] = {
+    'db': 'netease_news',
+    'host': '47.241.35.150',
+    'port': 27017,
+    'connect': True,
+    'username': 'admin',
+    'password': '123456',
+    'authentication_source': 'admin'
+}
 
 mongoDB = MongoEngine()
 mongoDB.init_app(app=app)
