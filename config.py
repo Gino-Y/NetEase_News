@@ -15,8 +15,6 @@ class DB(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SECRET_KEY = '123123'
 
-    # db = SQLAlchemy(app)
-
     # mongoDB数据库连接的配置
     # 通过mongoDB_SETTINGS配置MongoEngine
     MONGODB_SETTINGS = {
@@ -28,4 +26,15 @@ class DB(object):
         'password': '123456',
         'authentication_source': 'admin'
     }
+
+    REDIS_SETTINGS = {
+        'db': 2,
+        'host': 'localhost',
+        'port': 6379,
+        'max_connections': 20,
+        # 自动进行结果的转换
+        'decode_responses': True
+    }
+    # 首页新闻缓存的KEY
+    INDEX_NEWS_KEY = 'index_news_key'
 

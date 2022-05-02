@@ -8,6 +8,7 @@ from flask import (Flask,
                    request,
                    url_for)
 import config
+from cache import NewsCache
 from forms import NewsForm, CommentForm
 from models import mysqlDB, mongoDB, News, Comments
 
@@ -81,10 +82,15 @@ def news_add():
                 title=form.title.data,
                 content=form.content.data,
                 img_url=form.img_url.data,
+                is_top=form.is_top.data,
                 news_type=form.news_type.data
             )
             mysqlDB.session.add(news_obj)
             mysqlDB.session.commit()
+            # 缓存新闻信息
+            if news_obj.is_top:
+                cache_obj = NewsCache()
+                cache_obj.set_index_news()
             print('新增成功')
             flash('新增成功', 'success')
             return redirect(url_for('admin'))

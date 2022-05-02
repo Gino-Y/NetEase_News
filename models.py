@@ -29,6 +29,16 @@ class News(mysqlDB.Model):
         queryset = Comments.objects.filter(object_id=self.id, is_valid=True)
         return queryset
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'img_url': self.img_url,
+            'content': self.content,
+            'news_type': self.news_type,
+            'created_at': self.created_at.strftime('%Y-%m-%d'),
+        }
+
 
 class Comments(mongoDB.Document):
     """ 评论的ODM模型 """
