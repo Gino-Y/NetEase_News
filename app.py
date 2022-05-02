@@ -67,6 +67,12 @@ class News(mysqlDB.Model):
     updated_at = mysqlDB.Column(mysqlDB.DateTime, default=datetime.now(), comment='最后修改时间')
     news_type = mysqlDB.Column(mysqlDB.Enum('本地', '百家', '娱乐', '军事'), comment='新闻类别')
 
+    def get_comments(self):
+        """评论列表"""
+        # TODO 借用于分页的方式来实现
+        queryset = Comments.objects.filter(object_id=self.id, is_valid=True)
+        return queryset
+
 
 class Comments(mongoDB.Document):
     """ 评论的ODM模型 """
@@ -82,8 +88,13 @@ class Comments(mongoDB.Document):
         # 所存放的集合
         'collection': 'comments',
         # 排序规则：是否有效（有效的在前）、发布的时间倒序
-        'ordering': ['is_valid', '-created_at']
+        'ordering': ['-is_valid', '-created_at']
     }
+
+    @property
+    def news_obj(self):
+        """新闻的对象"""
+        return News.query.get(self.object_id)
 
     def __str__(self):
         return f'Comments: {self.content}'
@@ -231,3 +242,32 @@ def comment_add(news_id):
     return render_template('detail.html',
                            form=form,
                            new_obj=new_obj)
+
+
+@app.route('/admin/comment/')
+@app.route('/admin/comment/<int:page>/')
+def admin_comment(page=1):
+    """ 后台管理-评论管理 """
+    # 每页放5条数据
+    page_size = 5
+    page_data = Comments.objects.all()
+    page_data = page_data.paginate(page=page, per_page=page_size)
+    return render_template('admin/comments.html',
+                           page_data=page_data)
+
+
+@app.route('/admin/comment/delete/<string:pk>/', methods=['POST'])
+def comment_delete(pk):
+    """ 逻辑删除评论 """
+    if request.method == 'POST':
+        comment_obj = Comments.objects.filter(id=pk).first()
+        # 评论不存在
+        if comment_obj is None:
+            return 'no'
+        # 评论已经被删除掉了
+        if not comment_obj.is_valid:
+            return 'no'
+        comment_obj.is_valid = False
+        comment_obj.save()
+        return 'yes'
+    return 'no'

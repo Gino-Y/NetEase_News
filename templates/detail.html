@@ -18,18 +18,12 @@
     </p>
     <hr>
     <h4>评论列表</h4>
-    <blockquote>
-      这是第一条评论
-      <footer class="text-muted text-right">2021-05-14 00:34:46</footer>
-    </blockquote>
-    <blockquote>
-      这是第二条评论
-      <footer class="text-muted text-right">2021-05-14 00:34:46</footer>
-    </blockquote>
-    <blockquote>
-      这是第三条评论
-      <footer class="text-muted text-right">2021-05-14 00:34:46</footer>
-    </blockquote>
+      {% for comment_obj in new_obj.get_comments() %}
+        <blockquote>
+            {{ comment_obj.content }}
+          <footer class="text-muted text-right">{{ comment_obj.created_at.date() }}</footer>
+        </blockquote>
+      {% endfor %}
     <hr>
     <h4>发表评论</h4>
     <form class="comment-form" method='post' action="{{ url_for('comment_add', news_id=new_obj.id) }}">
