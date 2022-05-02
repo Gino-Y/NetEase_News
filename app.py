@@ -110,16 +110,23 @@ def news_update(pk):
     if not news_obj.is_valid:
         abort(404)
     form = NewsForm(obj=news_obj)
+    is_top_origin = news_obj.is_top
     if request.method == 'POST':
         if form.validate_on_submit():
+            is_top = form.is_top.data
             news_obj.title = form.title.data
             news_obj.content = form.content.data
             news_obj.img_url = form.img_url.data
             news_obj.news_type = form.news_type.data
-            news_obj.is_top = form.is_top.data
+            news_obj.is_top = is_top
             news_obj.updated_at = datetime.now()
             mysqlDB.session.add(news_obj)
             mysqlDB.session.commit()
+
+            # 更新缓存：（1）取消推荐 （2）添加推荐
+            if is_top_origin != is_top:
+                cache_obj = NewsCache()
+                cache_obj.set_index_news()
             flash('新闻修改成功', 'success')
             return redirect(url_for('admin'))
         else:

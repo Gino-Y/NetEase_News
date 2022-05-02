@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import redis, json
 from flask import current_app
 
@@ -43,7 +45,8 @@ class NewsCache(BaseRedisConnection):
             news_list.append(item.to_dict())
         key = current_app.config['INDEX_NEWS_KEY']
         data = {
-            key: news_list
+            key: news_list,
+            't': datetime.now().timestamp()
         }
         result = self.conn.set(key, json.dumps(data))
         print('缓存完成：', result)
