@@ -23,7 +23,9 @@ mongoDB.init_app(app)
 @app.route('/')
 def index():
     """ 首页 """
-    news_list = News.query.filter(News.is_valid == True, News.is_top == True).all()
+    # news_list = News.query.filter(News.is_valid == True, News.is_top == True).all()
+    cache_obj = NewsCache()
+    news_list = cache_obj.get_index_news()
     return render_template('index.html',
                            news_list=news_list)
 
@@ -196,3 +198,7 @@ def comment_delete(pk):
         comment_obj.save()
         return 'yes'
     return 'no'
+
+
+if __name__ == '__main__':
+    app.run()

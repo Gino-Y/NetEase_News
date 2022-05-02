@@ -36,7 +36,7 @@ class NewsCache(BaseRedisConnection):
 
     def set_index_news(self):
         """ 缓存首页热点新闻信息 """
-        queryset = News.query.filter(News.is_valid == True, News.is_top == True).all()
+        queryset = News.query.filter(News.is_valid == True, News.is_top == True).order_by(News.updated_at.desc()).all()
         news_list = []
         for item in queryset:
             print(item)
@@ -47,3 +47,15 @@ class NewsCache(BaseRedisConnection):
         }
         result = self.conn.set(key, json.dumps(data))
         print('缓存完成：', result)
+
+    def get_index_news(self):
+        """ 获取首页的热点新闻 """
+        key = current_app.config['INDEX_NEWS_KEY']
+        result = self.conn.get(key)
+        # 没有被缓存
+        if result is None:
+            self.set_index_news()
+            result = self.conn.get(key)
+        news_info = json.loads(result)
+        return news_info[key]
+
