@@ -44,7 +44,7 @@ class NewsForm(FlaskForm):
                             render_kw={'class': 'form-control'})
     img_url = StringField(label='新闻图片',
                           description='请输入图片地址',
-                          default='/static/img/news/new1.jpg',
+                          default='/static/img/news/favicon.ico',
                           render_kw={'required': 'required', 'class': 'form-control'})
     is_top = BooleanField(label='是否置顶')
     submit = SubmitField(label='提交',

@@ -138,6 +138,8 @@ def news_update(pk):
 def news_delete(pk):
     """ 逻辑删除新闻 """
     if request.method == 'POST':
+        cache_obj = NewsCache()
+        cache_obj.set_index_news()
         news_obj = News.query.get(pk)
         # 新闻不存在
         if news_obj is None:
